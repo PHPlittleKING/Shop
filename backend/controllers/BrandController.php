@@ -1,45 +1,62 @@
 <?php
-
 namespace backend\controllers;
 
-use Yii;
-use backend\models\Brand;
-use backend\models\BrandSearch;
+use common\models\Brand;
+use yii;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\grid\GridView;
+use yii\data\ActiveDataProvider;  //引用
+use yii\data\Pagination;    //分页类
 
-/**
- * BrandController implements the CRUD actions for Brand model.
- */
 class BrandController extends Controller
 {
+    public $layout='main';
     public function actionAdd()
     {
-        $this->layout = false;
-        $model = new Brand();
-        $request = Yii::$app->request;
-        if ($request->isPost)
+        $brand = new Brand();
+        //判断是否post过来数据
+        if(yii::$app->request->isPost)
         {
-            var_dump($request);
+            $post=yii::$app->request->post();
+            if($brand->load($post) && $brand->validate())
+            {
+                $brand->save();
+            }
         }
-        else
-        {
-            return $this->render('add');
-        }
-
-
-        return $this->render('add');
+        return $this->render('add',['brand'=>$brand]);
     }
 
     public function actionShow()
     {
-        $this->layout = false;
-        $model = new Brand();
-        $sql = brand::find()->all();
-        return $this->render('show',[
-            'sql' => $sql,
-        ]);
+        $sql= Brand::find()->all();
+        return $this->render('show',['sql'=>$sql]);
     }
+
+
+    //分页
+//    public function actionShow()
+//    {
+//        $query = Brand::find();
+//        $provider = new ActiveDataProvider([
+//            'query' => $query,
+//            'pagination' => [
+//                'pageSize' => 5,   //每页条数
+//            ],
+//        ]);
+//        return $this->render('show', [
+//            'model' => $query,
+//            'dataProvider' => $provider
+//        ]);
+//
+//    }
+
+        public function actionUpdate()
+        {
+            $this->layout = 'main';
+            $brand = new Brand();
+            $brand = Brand::find()->one();
+            var_dump($brand);die;
+            return $this->render('update',['brand'=>$brand]);
+        }
 
 }

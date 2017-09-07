@@ -1,12 +1,11 @@
 <?php
 
-namespace backend\models;
+namespace common\models;
 
-use yii;
-use yii\db\ActiveRecord;
-
+use Yii;
+use \yii\db\ActiveRecord;
 /**
- * This is the model class for table "sh_brand".
+ * This is the model class for table "{{%brand}}".
  *
  * @property integer $id
  * @property string $b_name
@@ -23,7 +22,7 @@ class Brand extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'sh_brand';
+        return '{{%brand}}';
     }
 
     /**
@@ -47,12 +46,13 @@ class Brand extends ActiveRecord
     public function attributeLabels()
     {
         return [
+            'id' => '品牌id',
             'b_name' => '品牌名称',
-            'b_logo' => '品牌Logo',
-            'b_desc' => '描述',
-            'site_url' => '品牌官网',
-            'sort' => '排序',
-            'is_show' => '是否展示',
+            'b_logo' => 'Logo图片',
+            'b_desc' => '简单描述',
+            'site_url' => '品牌的网址',
+            'sort' => '排序',//品牌在前台页面的显示顺序,数字越大越靠后
+            'is_show' => '是否显示',//;0否1显示
         ];
     }
 }
