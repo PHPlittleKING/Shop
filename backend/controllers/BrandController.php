@@ -10,7 +10,8 @@ use yii\data\Pagination;    //分页类
 
 class BrandController extends Controller
 {
-    public $layout='main';
+    public $layout= 'main';
+    //品牌添加
     public function actionAdd()
     {
         $brand = new Brand();
@@ -20,12 +21,20 @@ class BrandController extends Controller
             $post=yii::$app->request->post();
             if($brand->load($post) && $brand->validate())
             {
-                $brand->save();
+                $b = $brand->save();
+                if($b)
+                {
+                    return $this->redirect(['brand/show']);
+                }
+                else
+                {
+                    return $this->redirect(['brand/add']);
+                }
             }
         }
         return $this->render('add',['brand'=>$brand]);
     }
-
+    //品牌查询
     public function actionShow()
     {
         $sql= Brand::find()->all();
@@ -49,14 +58,25 @@ class BrandController extends Controller
 //        ]);
 //
 //    }
-
+        //品牌修改
         public function actionUpdate()
         {
             $this->layout = 'main';
             $brand = new Brand();
+            $get = yii::$app->request->get('id');
+            var_dump($get);die;
             $brand = Brand::find()->one();
-            var_dump($brand);die;
             return $this->render('update',['brand'=>$brand]);
+        }
+
+        public function actionDel()
+        {
+            $brand = new Brand();
+            $get = yii::$app->request->get('id');
+            $brand = Brand::find()->where(['id'=>'id'])->one();
+            var_dump($get);die;
+            $brand->delete();
+            return $this->render('del');
         }
 
 }

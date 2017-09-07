@@ -65,7 +65,7 @@ use yii\widgets\LinkPager;
                             </td>
                             <td class="align-right">
                                 <a href="<?= Url::toRoute(['brand/update','id'=>$value['id']])?>">修改</a> |
-                                <a href="<?= Url::toRoute('brand/del')?>">回收站</a>
+                                <a href="<?= Url::toRoute(['brand/del','id'=>$value['id']])?>">回收站</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
