@@ -1,45 +1,79 @@
 <?php
 namespace frontend\models;
 
+use Yii;
 use yii\base\Model;
-// use common\models\User;
-// use yii\web\UploadedFile;
+use backend\models\Admin;
 
-class LoginForm extends \yii\base\Model
+/**
+ * Login form
+ */
+class LoginForm extends Model
 {
     public $username;
-    public $pwd;
-    public $email;
-    public $phone;
+    public $password;
+    public $rememberMe = true;
 
+    private $_user;
+
+
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [
-            // 在这里定义验证规则
+            // username and password are both required
+            [['username', 'password'], 'required'],
+            // rememberMe must be a boolean value
+            ['rememberMe', 'boolean'],
+            // password is validated by validatePassword()
+            ['password', 'validatePassword'],
+        ];
+    }
 
-			[['username'],'required','message'=>'用户名不能为空'],  
-			['pwd','required','message'=>'密码不能为空'],
-			['pwd','string','max'=>6,'min'=>3],
-			['email','required','message'=>'邮箱不能为空'],
-			['email','email','message'=>'邮箱格式不正确'],
-			['phone','required','message'=>'手机号不能为空'],
-      [['phone'],'match','pattern'=>'/^[1][3578][0-9]{9}$/','message'=>'手机格式不正确'],
-      ];
-    } 
-    
-    public function attributeLabels()
-  	{
+    /**
+     * Validates the password.
+     * This method serves as the inline validation for password.
+     *
+     * @param string $attribute the attribute currently being validated
+     * @param array $params the additional name-value pairs given in the rule
+     */
+    public function validatePassword($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            $user = $this->getUser();
+            if (!$user || !$user->validatePassword($this->password)) {
+                $this->addError($attribute, 'Incorrect username or password.');
+            }
+        }
+    }
 
-     return [
-       'username'=>'用户名',
-       'email'=>'邮箱',
-       'pwd'=>'密码',
-       'phone'=>'手机号',
+    /**
+     * Logs in a user using the provided username and password.
+     *
+     * @return bool whether the user is logged in successfully
+     */
+    public function login()
+    {
+        if ($this->validate()) {
+            return Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+        } else {
+            return false;
+        }
+    }
 
-      ];
-  	}
+    /**
+     * Finds user by [[username]]
+     *
+     * @return User|null
+     */
+    protected function getUser()
+    {
+        if ($this->_user === null) {
+            $this->_user = User::findByUsername($this->username);
+        }
 
+        return $this->_user;
+    }
 }
-
-
-?>

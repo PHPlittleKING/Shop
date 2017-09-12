@@ -5,7 +5,7 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use common\models\LoginForm;
+use backend\models\LoginForm;
 
 /**
  * Site controller
@@ -13,6 +13,7 @@ use common\models\LoginForm;
 class SiteController extends Controller
 {
     /**
+     * ACF 认证
      * @inheritdoc
      */
     public function behaviors()
@@ -28,7 +29,7 @@ class SiteController extends Controller
                     [
                         'actions' => ['logout', 'index'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['@'],       //认证用户
                     ],
                 ],
             ],
@@ -60,7 +61,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $this->redirect(['index/index']);
+//        return $this->render('index');
     }
 
     /**
@@ -68,21 +70,22 @@ class SiteController extends Controller
      *
      * @return string
      */
-//    public function actionLogin()
-//    {
-//        if (!Yii::$app->user->isGuest) {
-//            return $this->goHome();
-//        }
-//
-//        $model = new LoginForm();
-//        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-//            return $this->goBack();
-//        } else {
-//            return $this->render('login', [
-//                'model' => $model,
-//            ]);
-//        }
-//    }
+    public function actionLogin()
+    {
+        $this->layout = 'signin';
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new LoginForm();
+        if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            return $this->goBack();
+        } else {
+            return $this->render('login', [
+                'model' => $model,
+            ]);
+        }
+    }
 
     /**
      * Logout action.
@@ -96,5 +99,9 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-
+    public function actionGetpwd()
+    {
+        $this->layout = false;
+        return $this->render('getpwd');
+    }
 }

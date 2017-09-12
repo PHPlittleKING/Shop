@@ -1,82 +1,132 @@
 <?php
+
 namespace backend\controllers;
 
-use common\models\Brand;
 use yii;
+use common\models\Brand;
 use yii\web\Controller;
-use yii\grid\GridView;
-use yii\data\ActiveDataProvider;  //引用
-use yii\data\Pagination;    //分页类
+use yii\data\Pagination;
+use yii\filters\AccessControl;
 
-class BrandController extends Controller
+
+class BrandController extends IndexController
 {
     public $layout= 'main';
-    //品牌添加
-    public function actionAdd()
+
+    /**
+     * ACF 认证
+     * @inheritdoc
+     */
+    public function behaviors()
     {
-        $brand = new Brand();
-        //判断是否post过来数据
-        if(yii::$app->request->isPost)
+        return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => [],
+                        'allow' => true,
+                        'roles' => ['@'],       //认证用户
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * 品牌展示
+     * @return string
+     */
+    public function actionList()
+    {
+        $brandName = Yii::$app->request->get('brand_name','');
+        $map = empty($brandName) ? [] : ['like','brand_name',$brandName];
+
+        $query = Brand::find()->where($map);
+
+        $page = new Pagination(['defaultPageSize'=>Yii::$app->params['pageSize'],'totalCount'=>$query->count()]);
+        $brands = $query->offset($page->offset)->limit($page->limit)->all();
+        return $this->render('list',['brands'=>$brands,'page'=>$page,'brandName'=>$brandName]);
+    }
+
+    /**
+     * 品牌添加
+     * @return string
+     */
+    public function actionCreate()
+    {
+        $brand = (new Brand())->loadDefaultValues();
+
+        if(Yii::$app->request->isPost)
         {
-            $post=yii::$app->request->post();
+            $post = yii::$app->request->post();
             if($brand->load($post) && $brand->validate())
             {
-                $b = $brand->save();
-                if($b)
+                $res = $brand->save();
+                if($res)
                 {
-                    return $this->redirect(['brand/show']);
+                    $this->success('品牌添加成功',['brand/list']);
                 }
                 else
                 {
-                    return $this->redirect(['brand/add']);
+                    $this->error('品牌添加失败');
                 }
             }
         }
+//        $brand->is_show = 1;
+//        $brand->loadDefaultValues();
         return $this->render('add',['brand'=>$brand]);
     }
-    //品牌查询
-    public function actionShow()
+
+    /**
+     * 品牌删除
+     */
+    public function actionDel()
     {
-        $sql= Brand::find()->all();
-        return $this->render('show',['sql'=>$sql]);
+        $id = Yii::$app->request->get('id',0);
+        $brand = Brand::findOne($id);
+        if($brand->delete())
+        {
+            $this->redirect(['brand/list']);
+        }
+        else
+        {
+            die('del Fail');
+        }
+    }
+
+    /**
+     * 品牌修改
+     */
+    public function actionUpdate($id)
+    {
+        $brand = Brand::findOne($id);
+
+        if(Yii::$app->request->isPost)
+        {
+            if($brand->load(Yii::$app->request->post()) && $brand->validate())
+            {
+                $res = $brand->save();
+                if($res)
+                {
+                    $this->success('修改成功.',['brand/list']);
+                }
+                else
+                {
+                    $this->error('没有修改或修改失败');
+                }
+            }
+            else
+            {
+                $this->error('数据不合法.');
+            }
+        }
+
+        return $this->render('update',['brand'=>$brand]);
+
     }
 
 
-    //分页
-//    public function actionShow()
-//    {
-//        $query = Brand::find();
-//        $provider = new ActiveDataProvider([
-//            'query' => $query,
-//            'pagination' => [
-//                'pageSize' => 5,   //每页条数
-//            ],
-//        ]);
-//        return $this->render('show', [
-//            'model' => $query,
-//            'dataProvider' => $provider
-//        ]);
-//
-//    }
-        //品牌修改
-        public function actionUpdate()
-        {
-            $this->layout = 'main';
-            $brand = new Brand();
-            $get = yii::$app->request->get('id');
-            var_dump($get);die;
-            $brand = Brand::find()->one();
-            return $this->render('update',['brand'=>$brand]);
-        }
 
-        public function actionDel()
-        {
-            $brand = new Brand();
-            $get = yii::$app->request->get('id');
-            $brand = Brand::find()->where(['id'=>'id'])->one();
-            var_dump($get);die;
-            $brand->delete();
-            return $this->render('del');
-        }
 
 }
