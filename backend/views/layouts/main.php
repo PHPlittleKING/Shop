@@ -190,8 +190,8 @@ use yii\helpers\Html;
             <ul class="submenu">
                 <li><a href="<?= Url::to(['brand/list']);?>">品牌列表</a></li>
                 <li><a href="<?= Url::to(['category/show']);?>">分类管理</a></li>
-                <li><a href="<?= Url::to(['goodstype/list']);?>">商品类型</a></li>
-                <li><a href="<?= Url::to(['goods/list']);?>">商品管理</a></li>
+                <li><a href="<?= Url::to(['goods-type/show']);?>">商品类型</a></li>
+                <li><a href="<?= Url::to(['goods/show']);?>">商品管理</a></li>
             </ul>
         </li>
         <li>

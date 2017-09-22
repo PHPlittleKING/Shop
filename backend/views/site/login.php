@@ -15,7 +15,7 @@ use yii\helpers\Url;
 
             <?= $form->field($model, 'password')->passwordInput(['class' => 'span12','placeholder' => "管理员密码"])->label('') ?>
 
-            <a href="<?= Url::toRoute('site/')?>" class="forgot">忘记密码?</a>
+            <a href="<?= Url::toRoute('site/send-mail')?>" class="forgot">忘记密码?</a>
             <div class="remember">
                 <?= $form->field($model, 'rememberMe')->checkbox() ?>
             </div>

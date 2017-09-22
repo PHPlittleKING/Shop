@@ -33,30 +33,17 @@
                     </thead>
                     <tbody>
                     <!-- row -->
+                    <?php foreach ($categorys as $value){?>
                     <tr class="first">
                         <td>
-                            男装
+                            <?= str_repeat('&nbsp;&nbsp;&nbsp;|----',$value['level'])?><?= $value['cat_name']?>
                         </td>
                         <td class="align-right">
-                            <a href="#">修改 |</a>
-                            <a href="#">删除</a>
-
+                            <a href="<?= \yii\helpers\Url::to(['category/update','id'=>$value['cat_id']])?>">">修改 |</a>
+                            <a href="<?= \yii\helpers\Url::to(['category/delete','id'=>$value['cat_id']])?>">删除</a>
                         </td>
                     </tr>
-                    <!-- row -->
-                    <!-- row -->
-                    <tr class="first">
-                        <td>
-                            |-----男士短裤
-                        </td>
-                        <td class="align-right">
-                            <a href="#">修改 |</a>
-                            <a href="#">删除</a>
-                        </td>
-                    </tr>
-                    <!-- row -->
-
-
+                    <?php }; ?>
                     </tbody>
                 </table>
             </div>

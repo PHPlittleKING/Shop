@@ -22,7 +22,7 @@
                         ]);?>
 
                         <div class="span12 field-box">
-                            <?= $form->field($category,'parent_id')->dropDownList(['0'=>'11'],['prompt'=>'顶级分类'])?>
+                            <?= $form->field($category,'parent_id')->dropDownList($dropDownList,['prompt'=>'顶级分类'])?>
                         </div>
 
                         <div class="span12 field-box">

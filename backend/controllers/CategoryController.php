@@ -19,10 +19,9 @@ class CategoryController extends IndexController
     public $layout = 'main';
     public function actionShow()
     {
-        $categorys = Category::find()->asArray()->all();
-        $result = Category::getCategory($categorys);
-        var_dump($result);die;
-        return $this->render('show',['category'=>$category]);
+
+        $categorys = Category::getCategory(Category::find()->asArray()->all());
+        return $this->render('show',['categorys'=>$categorys]);
     }
 
     public function actionAdd()
@@ -42,9 +41,30 @@ class CategoryController extends IndexController
                     $this->error('添加失败');
                 }
             }
-
         }
-        return $this->render('add',['category'=>$category]);
+        $categories=category::getCategory(category::find()->asArray()->all());
+        $dropDownList=$category->dropDownList($categories);
+        return $this->render('add',['category'=>$category,'dropDownList'=>$dropDownList]);
+    }
+
+    public function actionDelete()
+    {
+        $id = Yii::$app->request->get('id');
+        $count = Category::find()->where('parent_id=:id',['id'=>$id])->count();
+//        var_dump($count);die;
+        if($count > 0)
+        {
+            $this->error('该分支下有孩子，不能删除！');
+        }
+        $cat = Category::findOne($id);
+        if($cat->delete())
+        {
+            $this->success('删除成功',['category/show']);
+        }
+        else
+        {
+            $this->error('删除失败');
+        }
     }
 
 

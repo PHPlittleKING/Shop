@@ -59,19 +59,38 @@ class Category extends \yii\db\ActiveRecord
         return $this->hasMany(Goods::className(), ['cat_id' => 'cat_id']);
     }
 
-    static public function getCategory($categorys=[])
+    public function dropDownList($categories=[])
     {
-        $result = [];
+        $result=[];
+        if(is_array($categories))
+        {
+            foreach ($categories as $value)
+            {
+                $result[$value['cat_id']]=str_repeat('---',$value['level']).$value['cat_name'];
+            }
+
+    }
+        return $result;
+    }
+
+    //无限极分类
+    static public function getCategory($categorys=[],$parentId=0,$level=0)
+    {
+        static $result = [];
         if(is_array($categorys))
         {
             foreach($categorys as $key => $value )
             {
-                if($value['parent_id'] == 0)
+                if($value['parent_id'] == $parentId)
                 {
-                    $result = $value;
+                    $value['level'] = $level;
+                    $result[] = $value;
+                    self::getCategory($categorys,$value['cat_id'],$level+1);
                 }
             }
         }
-        var_dump($result);die;
+        return $result;
     }
+
+
 }
