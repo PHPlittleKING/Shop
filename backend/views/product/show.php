@@ -8,8 +8,8 @@
                 <div class="span5">
                     <h5>商品属性规格</h5>
                 </div>
-                <div class="span5">
-                    <h5>商品名称：Apple MacBook 12英寸笔记本电脑</h5>
+                <div class="span7">
+                    <h5>商品名称：<?= $gname;?></h5>
                 </div>
             </div>
 
@@ -23,106 +23,19 @@
 
                 <div class="container">
                     <label>商品类型:</label>
-                    <div class="ui-select">
-                        <select>
-                            <option />手机
-                            <option />图书
-                            <option />笔记本
-                        </select>
-                    </div>
+                    <?= \yii\helpers\Html::dropDownList('type_id','',$typeList,['prompt'=>'请选择...','style'=>'height:30px;']);?>
+
                     <label class="label">请选择商品的所属类型，进而完善此商品的属性</label>
                     <hr>
-                    <form class="new_user_form inline-input" >
-                        <!-- 属性 -->
-                        <div class="span6 column">
-                            <div class="field-box">
-                                <label>生产日期:</label>
-                                <input class="span5" type="text" />
-                            </div>
+                    <div class="attr_list">
 
-                            <div class="field-box">
-                                <label>品牌名:</label>
-                                <input class="span5" type="text" />
-                            </div>
-
-                            <div class="field-box">
-                                <label>品牌官网:</label>
-                                <input class="span5" type="text" />
-                            </div>
-
-                            <div class="field-box">
-                                <label>屏幕尺寸:</label>
-                                <div class="ui-select">
-                                    <select>
-                                        <option selected="">13</option>
-                                        <option>13.3</option>
-                                        <option>15.6</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- 规格 -->
-                        <div class="span6 column pull-right">
-                            <div class="field-box">
-                                <label>颜色:</label>
-                                <div class="ui-select">
-                                    <select>
-                                        <option selected="">土豪金</option>
-                                        <option>星空灰</option>
-                                        <option>玫瑰红</option>
-                                    </select>
-                                </div>
-                                <span class="btn-flat">+</span>
-                            </div>
-
-                            <div class="field-box">
-                                <label>颜色:</label>
-                                <div class="ui-select">
-                                    <select>
-                                        <option selected="">土豪金</option>
-                                        <option>星空灰</option>
-                                        <option>玫瑰红</option>
-                                    </select>
-                                </div>
-                                <span class="btn-flat">&#8722;</span>
-                            </div>
-
-                            <div class="field-box">
-                                <label>颜色:</label>
-                                <div class="ui-select">
-                                    <select>
-                                        <option selected="">土豪金</option>
-                                        <option>星空灰</option>
-                                        <option>玫瑰红</option>
-                                    </select>
-                                </div>
-                                <span class="btn-flat">&#8722;</span>
-                            </div>
-
-                            <div class="field-box">
-                                <label>内存:</label>
-                                <div class="ui-select">
-                                    <select>
-                                        <option selected="">4G</option>
-                                        <option>8G</option>
-                                        <option>16G</option>
-                                    </select>
-                                </div>
-                                <span class="btn-flat">+</span>
-                            </div>
-
-                        </div>
+                    </div>
 
 
 
-                    </form>
                 </div>
 
-                <div class="span8 field-box actions pull-right">
-                    <input type="button" class="btn-glow primary" value="确认保存" />
-                </div>
+
 
             </div>
         </div>
@@ -144,7 +57,7 @@
 
                 <div class="row-fluid filter-block">
                     <div class="pull-right">
-                        <a href="<?= \yii\helpers\Url::toRoute('goods-type/show')?>" class="btn-flat success new-product">返回列表</a>
+                        <a href="good-type-add.html" class="btn-flat success new-product">返回列表</a>
                     </div>
                 </div>
 
@@ -253,3 +166,18 @@
         </div>
     </div>
 </div>
+<!-- end main container -->
+
+<script>
+    $(function () {
+
+        $('select[name="type_id"]').change(function () {
+            var tid = $(this).val();
+            var url = "<?= \yii\helpers\Url::to(['goods-type/get-attr-by-type-id'])?>";
+            $.get(url,{'tid':tid},function (res) {
+                console.log(res);
+                $('.attr_list').html(res);
+            });
+        })
+    })
+</script>

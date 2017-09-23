@@ -80,4 +80,28 @@ class Attribute extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Goods::className(), ['goods_id' => 'goods_id'])->viaTable('{{%goods_attr}}', ['attr_id' => 'attr_id']);
     }
+
+    public function getAttr($tid)
+    {
+        $attr_list = ['attr'=>[],'spec'=>[]];
+        $attrs = self::find()->select('attr_id,attr_name,attr_values,attr_type')->where('type_id=:tid',[':tid'=>$tid])->asArray()->all();
+        foreach ($attrs as $key=>$value)
+        {
+            if(!empty($value['attr_values']))
+            {
+                $value['attr_values'] = explode("\r\n",$value['attr_values']);
+            }
+            if($value['attr_type'])
+            {
+                // 规格
+                $attr_list['spec'][] = $value;
+            }
+            else
+            {
+                // 属性
+                $attr_list['attr'][] = $value;
+            }
+        }
+        return $attr_list;
+    }
 }

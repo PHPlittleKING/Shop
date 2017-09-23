@@ -3,17 +3,19 @@ namespace common\models;
 
 
 use Qiniu\Auth;
+use Qiniu\Config;
+use Qiniu\Storage\BucketManager;
 use Qiniu\Storage\UploadManager;
 use yii\base\ErrorException;
 use yii\base\Exception;
 use yii\base\Model;
 class UploadForm extends Model
 {
-    protected $rootPath = './uploads/';         // 上传跟目录
-    protected $filePath;                        // 上传后的目录
-    public $file;                               // 上传后的文件位置
-    public $imageFile;                          // 文件对象
-    public $qiniuConfig;                        // 七牛配置
+    protected $rootPath = 'uploads/';               // 上传跟目录
+    protected $filePath;                            // 上传后的目录
+    public $file;                                   // 上传后的文件位置
+    public $imageFile;                              // 文件对象
+    public $qiniuConfig;                            // 七牛配置
     public function __construct(array $config = [])
     {
         parent::__construct($config);
@@ -24,6 +26,19 @@ class UploadForm extends Model
         return [
             [['imageFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png,jpg,gif'],
         ];
+    }
+    /**
+     * 删除七牛云资源
+     *
+     * @param $key
+     * @return mixed
+     */
+    public function deleteFile($key)
+    {
+        $auth = new Auth($this->qiniuConfig['accessKey'],$this->qiniuConfig['secretKey']);
+        $config = new Config();
+        $bucketMar = new BucketManager($auth,$config);
+        return $bucketMar->delete($this->qiniuConfig['bucket'],$key);
     }
     /**
      * 构造私有空间文件下载地址
@@ -44,15 +59,18 @@ class UploadForm extends Model
      */
     public function uploadToQiNiu()
     {
-        // code 0:上传成功；100:验证失败；200:入库失败；
+        // code 0:上传成功；100:验证失败；200:入库失败；300:删除失败;
         $result = ['code'=>0,'msg'=>'上传成功.','data'=>['src'=>'','url'=>'']];
         if($this->validate())
         {
-            $fileName = $this->createFileName() . '.' . $this->imageFile->extension;
+            $this->createPath();
+            $fileName = $this->qiniuConfig['basePath'] . $this->filePath . $this->createFileName() . '.' . $this->imageFile->extension;
 //            $fileName = '10000';
             $auth = new Auth($this->qiniuConfig['accessKey'],$this->qiniuConfig['secretKey']);
+
             $token = $auth->uploadToken($this->qiniuConfig['bucket']);
             list($ret,$err) = (new UploadManager())->putFile($token,$fileName,$this->imageFile->tempName);
+//            var_dump($auth);die;
             if($err == null)
             {
                 // 成功
@@ -108,7 +126,8 @@ class UploadForm extends Model
     }
     protected function createPath()
     {
-        $path = $this->rootPath . date('Y') .'/' . date('m') .'/' . date('d') .'/';
+        $datePath = date('Y') .'/' . date('m') .'/' . date('d') .'/';
+        $path = $this->rootPath . $datePath;
         try
         {
             if(!file_exists($path))
@@ -118,7 +137,7 @@ class UploadForm extends Model
                     throw new ErrorException('创建目录失败.');
                 }
             }
-            $this->filePath = $path;
+            $this->filePath = $datePath;
             return true;
         }
         catch (Exception $e)

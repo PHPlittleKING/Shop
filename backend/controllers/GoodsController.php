@@ -1,21 +1,32 @@
 <?php
 namespace backend\controllers;
 
-use backend\models\Goods;
 use backend\models\GoodsType;
 use common\models\Brand;
 use common\models\Category;
+use backend\models\Goods;
 use common\models\GoodsGallery;
 use common\models\UploadForm;
-use yii\data\Pagination;
+use Qiniu\Auth;
+use Qiniu\Storage\UploadManager;
 use Yii;
-
-use Qiniu\Processing\PersistentFop;
+use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
+use yii\web\Response;
 use yii\web\UploadedFile;
 
 class GoodsController extends IndexController
 {
+    public function beforeAction($action)
+    {
+        $noCsrfActions = ['gallery','edit-img'];
+        if(in_array($action->id,$noCsrfActions))
+        {
+            $action->controller->enableCsrfValidation = false;
+        }
+        return parent::beforeAction($action);
+    }
+
     public function actionAdd()
     {
         $this->layout = 'main';
@@ -83,10 +94,11 @@ class GoodsController extends IndexController
     return $this->render('show',['catList'=>$catList,'page'=>$page,'result'=>$result,'pagination'=>$pagination,'map'=>$map]);
     }
 
-    public function actionUpdate()
-    {
-        return $this->render('update');
-    }
+   public function actionUpdate()
+   {
+       return $this->render('show');
+   }
+
 
     private function search($map,$query)
     {
@@ -123,7 +135,7 @@ class GoodsController extends IndexController
     }
 
 
-    public function actionImg($gid='',$gname='')
+    public function actionGallery($gid='',$gname='')
     {
         if(Yii::$app->request->isPost && Yii::$app->request->isAjax)
         {
@@ -142,14 +154,58 @@ class GoodsController extends IndexController
                     $result['msg'] = '图片入库失败.';
                 }
             }
-            Yii::$app->response->format = Response::FORMAT_JSON;
+//            Yii::$app->response->format = Response::FORMAT_JSON;
             // 响应 JSON
-            return $result;
+            return json_encode($result);
         }
         // 该商品下的图片
         $galleries = (new GoodsGallery())->getGalleries($gid);
         return $this->render('gallery',['gname'=>$gname,'gid'=>$gid,'galleries'=>$galleries]);
     }
+
+    public function actionDeleteImg($key)
+    {
+        $result = ['code'=>0,'msg'=>'删除成功.','data'=>[]];
+        $error = (new UploadForm)->deleteFile($key);
+        if($error == null)
+        {
+            // 删除成功
+            $goodsGellery = GoodsGallery::find()->where(['original_img'=>$key])->one();
+            if(!is_null($goodsGellery) && !$goodsGellery->delete())
+            {
+                $result['code'] = 300;
+                $result['msg'] = '从数据库删除失败.';
+            }
+        }
+        else
+        {
+            $result['code'] = $error->code();
+            $result['msg'] = $error->message();
+        }
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return $result;
+    }
+
+    public function actionEditImg()
+    {
+        $img_desc = Yii::$app->request->post('img_desc');
+        $original_img = Yii::$app->request->post('original_img');
+        $result = GoodsGallery::updateAll(['img_desc'=>$img_desc],'original_img=:oimg',[':oimg'=>$original_img]);
+        return $result;
+    }
+
+    public function actionProduct($gid,$gname='')
+    {
+        $typeList = (new GoodsType)->dropDownList();
+        $data = [
+            'gid'       =>$gid,
+            'gname'     =>$gname,
+            'typeList'  =>$typeList
+        ];
+        return $this->render('product',$data);
+    }
+
+
 
 
 }

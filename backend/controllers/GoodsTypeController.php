@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\models\Attribute;
 use backend\models\GoodsType;
 use Yii;
 
@@ -51,6 +52,17 @@ class GoodsTypeController extends IndexController
     {
         return $this->render('del');
     }
+
+    public function actionGetAttrByTypeId($tid)
+    {
+        $this->layout = false;
+        $attrs = (new Attribute())->getAttr($tid);
+        return $this->render('attrlist',['attrs'=>$attrs]);
+    }
+
+
+
+
 }
 
 

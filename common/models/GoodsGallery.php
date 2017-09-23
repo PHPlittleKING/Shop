@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 use Yii;
+use backend\models\Goods;
 /**
  * This is the model class for table "{{%goods_gallery}}".
  *
@@ -69,12 +70,14 @@ class GoodsGallery extends \yii\db\ActiveRecord
      */
     public function createGallery($data)
     {
+
         if($this->load(['GoodsGallery'=>$data]) && $this->validate())
         {
             return $this->save();
         }
         else
         {
+
             return false;
         }
     }
