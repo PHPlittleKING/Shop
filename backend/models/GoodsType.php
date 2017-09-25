@@ -1,13 +1,10 @@
 <?php
-
 namespace backend\models;
-
 use Yii;
-
 /**
  * This is the model class for table "{{%goods_type}}".
  *
- * @property integer $type_id
+ * @property string $type_id
  * @property string $type_name
  * @property string $attr_group
  *
@@ -23,7 +20,6 @@ class GoodsType extends \yii\db\ActiveRecord
     {
         return '{{%goods_type}}';
     }
-
     /**
      * @inheritdoc
      */
@@ -33,7 +29,6 @@ class GoodsType extends \yii\db\ActiveRecord
             [['type_name', 'attr_group'], 'string', 'max' => 45],
         ];
     }
-
     /**
      * @inheritdoc
      */
@@ -45,7 +40,6 @@ class GoodsType extends \yii\db\ActiveRecord
             'attr_group' => '类型分组',
         ];
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -53,7 +47,6 @@ class GoodsType extends \yii\db\ActiveRecord
 //    {
 //        return $this->hasMany(Attribute::className(), ['type_id' => 'type_id']);
 //    }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -61,12 +54,23 @@ class GoodsType extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Goods::className(), ['type_id' => 'type_id']);
     }
-
-    static function getGoodsList()
+    /**
+     * 商品类型添加
+     *
+     * @return bool
+     */
+    public function createGoodsType()
+    {
+        if($this->load(Yii::$app->request->post()) && $this->validate())
+        {
+            return $this->save();
+        }
+    }
+    public function dropDownList()
     {
         $result = [];
-        $data =self::find()->asArray()->all();
-        foreach ($data as $key=>$value)
+        $typeList = self::find()->select('type_id,type_name')->asArray()->all();
+        foreach ($typeList as $value)
         {
             $result[$value['type_id']] = $value['type_name'];
         }

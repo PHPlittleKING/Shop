@@ -60,11 +60,24 @@ class GoodsTypeController extends IndexController
         return $this->render('attrlist',['attrs'=>$attrs]);
     }
 
+    public  function dropDownList()
+    {
+        return $this->render('list');
+    }
+
+    //
+    public function actionGetAttributeByTypeId($tid)
+    {
+        $this->layout = false;
+        $attrs = (new Attribute())->getAttr($tid);
+        return $this->render('attrlist',['attrs'=>$attrs]);
+    }
+
+
+
+
 
 
 
 }
-
-
-
 ?>

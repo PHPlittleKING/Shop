@@ -108,7 +108,7 @@ use yii\widgets\LinkPager;
                             </td>
                             <td class="align-right">
                                 <a href="<?= Url::to(['goods/gallery','gid'=>$val['goods_id'],'gname'=>$val['goods_name']])?>">相册</a> |
-                                <a href="<?= Url::toRoute('product/show') ?>">货品</a>  <br>
+                                <a href="<?= Url::to(['goods/product','gid'=>$val['goods_id'],'gname'=>$val['goods_name']]) ?>">货品</a>  <br>
                                 <a href="#">修改</a> |
                                 <a href="#">回收站</a>
                             </td>
@@ -118,16 +118,12 @@ use yii\widgets\LinkPager;
                             <tr><h2>暂时没有数据,去添加吧~~~</h2></tr>
                         </table>
                     <?php endif; ?>
-
-
-
                     </tbody>
                 </table>
             </div>
             <div class="pagination pull-right">
                 <?= LinkPager::widget(['pagination' => $page]); ?>
             </div>
-<!--             end users table-->
         </div>
     </div>
 </div>

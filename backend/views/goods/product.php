@@ -1,4 +1,6 @@
+<!-- main container -->
 <div class="content">
+
 
     <div class="container-fluid">
 
@@ -27,10 +29,13 @@
 
                     <label class="label">请选择商品的所属类型，进而完善此商品的属性</label>
                     <hr>
+
+                    <?= \yii\helpers\Html::beginForm(['goods/product','act'=>'attr','gid'=>$gid],'post',['class'=>'new_user_form inline-input']);?>
+
                     <div class="attr_list">
 
                     </div>
-
+                    <?= \yii\helpers\Html::endForm();?>
 
 
                 </div>
@@ -170,7 +175,24 @@
 
 <script>
     $(function () {
-
+        /**
+         * 移除规格
+         */
+        $(document).on('click','.btn',function () {
+            $(this).parent().remove();
+        });
+        /**
+         * 新增规格
+         */
+        $(document).on('click','.btn-flat',function () {
+            var parent = $(this).parent();
+            var node = parent.clone();
+            node.children('span').html('&#8722;').removeClass('btn-flat').addClass('btn');
+            parent.after(node);
+        });
+        /**
+         * 根据商品类型获取属性规格
+         */
         $('select[name="type_id"]').change(function () {
             var tid = $(this).val();
             var url = "<?= \yii\helpers\Url::to(['goods-type/get-attr-by-type-id'])?>";

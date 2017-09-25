@@ -1,8 +1,8 @@
 <?php
-
 namespace backend\models;
 
 use Yii;
+use common\models\GoodsAttr;
 
 /**
  * This is the model class for table "{{%attribute}}".
@@ -56,7 +56,6 @@ class Attribute extends \yii\db\ActiveRecord
             'type_id' => '类型ID',
         ];
     }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -94,6 +93,7 @@ class Attribute extends \yii\db\ActiveRecord
             if($value['attr_type'])
             {
                 // 规格
+//                var_dump($attr_list);
                 $attr_list['spec'][] = $value;
             }
             else
