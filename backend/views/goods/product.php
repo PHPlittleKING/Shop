@@ -37,11 +37,7 @@
                     </div>
                     <?= \yii\helpers\Html::endForm();?>
 
-
                 </div>
-
-
-
             </div>
         </div>
 
@@ -51,7 +47,7 @@
         <div id="pad-wrapper">
 
             <!-- products table-->
-            <!-- the script for the toggle all checkboxes from header is located in js/theme.js -->
+            <!-- the script  for the toggle all checkboxes from header is located in js/theme.js -->
             <div class="table-wrapper products-table section">
                 <div class="row-fluid head">
                     <div class="span5">
@@ -156,15 +152,11 @@
                             </td>
                         </tr>
                         <!-- row -->
-
-
                         </tbody>
                     </table>
-
                     <div class="span8 field-box actions pull-right">
                         <input type="button" class="btn-glow primary" value="确认保存" />
                     </div>
-
                 </div>
             </div>
             <!-- end products table -->
@@ -174,26 +166,20 @@
 <!-- end main container -->
 
 <script>
+    //移除规格
     $(function () {
-        /**
-         * 移除规格
-         */
         $(document).on('click','.btn',function () {
             $(this).parent().remove();
         });
-        /**
-         * 新增规格
-         */
+        //新增规格
         $(document).on('click','.btn-flat',function () {
             var parent = $(this).parent();
             var node = parent.clone();
             node.children('span').html('&#8722;').removeClass('btn-flat').addClass('btn');
             parent.after(node);
         });
-        /**
-         * 根据商品类型获取属性规格
-         */
-        $('select[name="type_id"]').change(function () {
+       //根据商品类型获取属性规格
+        $('select[name="type_id"]').change(function (){
             var tid = $(this).val();
             var url = "<?= \yii\helpers\Url::to(['goods-type/get-attr-by-type-id'])?>";
             $.get(url,{'tid':tid},function (res) {
@@ -201,5 +187,16 @@
                 $('.attr_list').html(res);
             });
         })
+    });
+    //新增货品组合（一行）
+    $(function(){
+        $(document).on('click','.btn-flat',function(){
+            var parent = $(this).parent();
+            var node = parent.clone();
+            node.children('span').html('&#8722;').removeClass('btn-falt').addClass('btn');
+            parent.after(node);
+        })
     })
 </script>
+
+

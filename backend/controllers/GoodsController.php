@@ -1,6 +1,7 @@
 <?php
 namespace backend\controllers;
 
+use backend\models\Attribute;
 use backend\models\GoodsType;
 use common\models\Brand;
 use common\models\Category;
@@ -15,6 +16,7 @@ use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 use yii\web\Response;
 use yii\web\UploadedFile;
+use common\models\Product;
 
 class GoodsController extends IndexController
 {
@@ -204,11 +206,12 @@ class GoodsController extends IndexController
             if((new GoodsAttr)->createAllGoodsAttr($gid,$post))
             {
                 echo 'OK';
+
             }
         }
         else if($act == 'product')
         {
-            var_dump($post);
+//            var_dump($post);
         }
 
         $typeList = (new GoodsType)->dropDownList();
@@ -217,8 +220,29 @@ class GoodsController extends IndexController
             'gname'     =>$gname,
             'typeList'  =>$typeList
         ];
+
         return $this->render('product',$data);
     }
+
+    public function actionGetAttr()
+    {
+        $model = new Product();
+        if(Yii::$app->request->isPost)
+        {
+            $data = Yii::$app->request->post();
+            if($model->load($data) && $model->validate())
+            {
+                var_dump($data);
+            }
+            else
+            {
+                echo 'NO';
+            }
+        }
+
+
+    }
+
 
 
 
